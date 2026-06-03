@@ -1,0 +1,5 @@
+= A high-performance observability data pipeline.
+
+vector is a Commodore component to manage A high-performance observability data pipeline..
+
+See the xref:references/parameters.adoc[parameters] reference for further details.

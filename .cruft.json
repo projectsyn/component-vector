@@ -1,0 +1,32 @@
+{
+  "template": "https://github.com/projectsyn/commodore-component-template.git",
+  "commit": "a5def401e0fd625486a985167f14b1e383a698be",
+  "checkout": "main",
+  "context": {
+    "cookiecutter": {
+      "name": "A high-performance observability data pipeline.",
+      "slug": "vector",
+      "parameter_key": "vector",
+      "test_cases": "defaults",
+      "add_lib": "n",
+      "add_pp": "n",
+      "add_golden": "y",
+      "add_matrix": "y",
+      "add_go_unit": "n",
+      "automerge_patch": "y",
+      "automerge_patch_v0": "n",
+      "automerge_patch_regexp_blocklist": "",
+      "automerge_patch_v0_regexp_allowlist": "",
+      "automerge_minor_regexp_allowlist": "",
+      "auto_release": "y",
+      "copyright_holder": "VSHN AG <info@vshn.ch>",
+      "copyright_year": "2026",
+      "github_owner": "projectsyn",
+      "github_name": "component-vector",
+      "github_url": "https://github.com/projectsyn/component-vector",
+      "_template": "https://github.com/projectsyn/commodore-component-template.git",
+      "_commit": "a5def401e0fd625486a985167f14b1e383a698be"
+    }
+  },
+  "directory": null
+}
