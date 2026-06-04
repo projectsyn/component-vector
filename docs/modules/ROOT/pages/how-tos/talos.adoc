@@ -1,0 +1,52 @@
+= Collect Talos host logs
+
+This guide shows how to forward Talos service and kernel logs into a Vector `socket` source running as a DaemonSet `Agent` on each node.
+
+== Talos MachineConfig
+
+Forward Talos service logs to the loopback UDP socket Vector listens on:
+
+[source,yaml]
+----
+machine:
+  logging:
+    destinations:
+      - endpoint: "udp://127.0.0.1:5140/"
+        format: "json_lines"
+        extraTags:
+          cluster: <cluster-name>
+----
+
+Forward kernel ring buffer (`kmsg`) entries to the same socket:
+
+[source,yaml]
+----
+apiVersion: v1alpha1
+kind: KmsgLogConfig
+name: remote-kernel-log
+url: udp://127.0.0.1:5140/
+----
+
+== Vector helm_values
+
+The Vector Agent must share the host network namespace so the loopback datagrams arrive:
+
+[source,yaml]
+----
+parameters:
+  vector:
+    helm_values:
+      role: Agent
+      podHostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      customConfig:
+        sources:
+          talos_logs:
+            type: socket
+            mode: udp
+            address: 0.0.0.0:5140
+            decoding:
+              codec: json
+----
+
+See `tests/resources.yml` in this repo for a fuller pipeline example that ships the parsed logs to Loki.

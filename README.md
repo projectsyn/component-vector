@@ -1,6 +1,6 @@
-# Commodore Component: A high-performance observability data pipeline.
+# Commodore Component: Vector
 
-This is a [Commodore][commodore] Component for A high-performance observability data pipeline..
+This is a [Commodore][commodore] Component for Vector.
 
 This repository is part of Project Syn.
 For documentation on Project Syn and this component, see [syn.tools](https://syn.tools).

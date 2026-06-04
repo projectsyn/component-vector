@@ -7,4 +7,10 @@ local params = inv.parameters.vector;
 
 // Define outputs below
 {
+  '00_namespace': kube.Namespace(params.namespace.name) {
+    metadata+: {
+      annotations+: params.namespace.annotations,
+      labels+: params.namespace.labels,
+    },
+  },
 }
