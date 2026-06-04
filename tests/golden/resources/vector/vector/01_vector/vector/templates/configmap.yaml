@@ -37,7 +37,7 @@ data:
         request:
           retry_max_duration_secs: 60
           timeout_secs: 90
-        tenant_id: test-cluster
+        tenant_id: c-green-test-1234
         type: loki
       loki_talos:
         buffer:
@@ -70,7 +70,7 @@ data:
         request:
           retry_max_duration_secs: 60
           timeout_secs: 90
-        tenant_id: test-cluster
+        tenant_id: c-green-test-1234
         type: loki
     sources:
       pod_logs:

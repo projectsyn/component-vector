@@ -2,10 +2,6 @@
 # Tails pod logs (kubernetes_logs) + Talos kernel/service logs (UDP 5140 via hostNetwork) and ships both to Loki with cluster/node labels.
 parameters:
   vector:
-    # Cluster identifier shipped as `cluster` label / Loki tenant.
-    # Default for test; tenant repo overrides with `${cluster:name}`.
-    tenant_id: test-cluster
-
     helm_values:
       role: Agent
       podHostNetwork: true

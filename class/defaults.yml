@@ -8,8 +8,7 @@ parameters:
       annotations: {}
 
     # Cluster identifier exposed for pipelines that label or partition events per cluster.
-    # Consumers typically override with `${cluster:name}`.
-    tenant_id: ''
+    tenant_id: ${cluster:name}
 
     charts:
       vector:

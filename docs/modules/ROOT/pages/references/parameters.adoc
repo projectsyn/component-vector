@@ -40,10 +40,9 @@ Additional annotations to add to the component's namespace.
 
 [horizontal]
 type:: string
-default:: `''`
+default:: `${cluster:name}`
 
 Cluster identifier exposed for pipelines that need to label or partition events per cluster.
-Typically overridden by the tenant repo with `${cluster:name}`.
 Reference it from `helm_values` as `${vector:tenant_id}` to inject the same value into env vars, sink tenant fields, or transform expressions.
 
 

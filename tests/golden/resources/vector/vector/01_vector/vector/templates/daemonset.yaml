@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: a703edc85e57c64d26e9887ffe034fd12a3447da976e2796ba991a6beb358d3d
+        checksum/config: 22dede55958655b05f52af4d52dab89d118b9f4d6e3efb7c0c6a5bc698662658
       labels:
         app.kubernetes.io/component: Agent
         app.kubernetes.io/instance: vector
@@ -39,7 +39,7 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: VECTOR_TENANT_ID
-              value: test-cluster
+              value: c-green-test-1234
             - name: VECTOR_SELF_NODE_NAME
               valueFrom:
                 fieldRef:
