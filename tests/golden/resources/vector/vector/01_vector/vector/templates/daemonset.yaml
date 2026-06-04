@@ -6,8 +6,8 @@ metadata:
     app.kubernetes.io/instance: vector
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: vector
-    app.kubernetes.io/version: 0.55.0-distroless-libc
-    helm.sh/chart: vector-0.52.0
+    app.kubernetes.io/version: 0.56.0-distroless-libc
+    helm.sh/chart: vector-0.56.0
   name: vector
   namespace: syn-vector
 spec:
@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 22dede55958655b05f52af4d52dab89d118b9f4d6e3efb7c0c6a5bc698662658
+        checksum/config: bdd4e3df8e274c1fdb76e69fdb579a6e29022dd006028068bcea427d1b5fe5f9
       labels:
         app.kubernetes.io/component: Agent
         app.kubernetes.io/instance: vector
@@ -56,7 +56,7 @@ spec:
               value: /host/proc
             - name: SYSFS_ROOT
               value: /host/sys
-          image: docker.io/timberio/vector:0.55.0-distroless-libc
+          image: docker.io/timberio/vector:0.56.0-distroless-libc
           imagePullPolicy: IfNotPresent
           name: vector
           ports:
