@@ -2,4 +2,18 @@ parameters:
   vector:
     =_metadata:
       multi_tenant: true
-    namespace: syn-vector
+    namespace:
+      name: syn-vector
+      labels: {}
+      annotations: {}
+
+    # Cluster identifier exposed for pipelines that label or partition events per cluster.
+    # Consumers typically override with `${cluster:name}`.
+    tenant_id: ''
+
+    charts:
+      vector:
+        source: https://helm.vector.dev
+        version: 0.52.0
+
+    helm_values: {}

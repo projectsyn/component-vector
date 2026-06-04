@@ -2,18 +2,73 @@
 
 The parent key for all of the following parameters is `vector`.
 
+
 == `namespace`
+
+[horizontal]
+type:: dictionary
+default:: https://github.com/projectsyn/component-vector/blob/master/class/defaults.yml[See `class/defaults.yml`]
+
+Configures the namespace in which to deploy this component.
+
+=== `namespace.name`
 
 [horizontal]
 type:: string
 default:: `syn-vector`
 
-The namespace in which to deploy this component.
+The namespace name.
+
+=== `namespace.labels`
+
+[horizontal]
+type:: dictionary
+default:: `{}`
+
+Additional labels to add to the component's namespace.
+
+=== `namespace.annotations`
+
+[horizontal]
+type:: dictionary
+default:: `{}`
+
+Additional annotations to add to the component's namespace.
 
 
-== Example
+== `tenant_id`
 
-[source,yaml]
-----
-namespace: example-namespace
-----
+[horizontal]
+type:: string
+default:: `''`
+
+Cluster identifier exposed for pipelines that need to label or partition events per cluster.
+Typically overridden by the tenant repo with `${cluster:name}`.
+Reference it from `helm_values` as `${vector:tenant_id}` to inject the same value into env vars, sink tenant fields, or transform expressions.
+
+
+== `charts`
+
+[horizontal]
+type:: dictionary
+default:: See https://github.com/projectsyn/component-vector/blob/master/class/defaults.yml[`class/defaults.yml`]
+
+The Helm chart source and version for the Vector chart.
+
+
+== `helm_values`
+
+[horizontal]
+type:: dictionary
+default:: `{}`
+
+Helm values to pass to the Vector Helm chart.
+The component does not set any defaults beyond the chart's own.
+See the https://github.com/vectordotdev/helm-charts/blob/develop/charts/vector/values.yaml[upstream `values.yaml`] for available options.
+
+Typical fields a consumer will set:
+
+* `role` (`Agent`, `Aggregator`, or `Stateless-Aggregator`).
+* `podHostNetwork` (for example required when reading Talos logs from `127.0.0.1:5140`).
+* `customConfig` (the full Vector pipeline definition).
+* `env` (downward-API entries such as `VECTOR_NODE_NAME`).

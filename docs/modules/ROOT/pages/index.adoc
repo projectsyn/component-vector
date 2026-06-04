@@ -1,5 +1,6 @@
-= A high-performance observability data pipeline.
+= Vector
 
-vector is a Commodore component to manage A high-performance observability data pipeline..
+vector is a Commodore component to manage https://vector.dev[Vector].
 
 See the xref:references/parameters.adoc[parameters] reference for further details.
+See xref:how-tos/talos.adoc[Collect Talos host logs] for an example.

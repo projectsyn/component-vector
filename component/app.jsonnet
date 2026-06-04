@@ -3,7 +3,7 @@ local inv = kap.inventory();
 local params = inv.parameters.vector;
 local argocd = import 'lib/argocd.libjsonnet';
 
-local app = argocd.App('vector', params.namespace);
+local app = argocd.App('vector', params.namespace.name);
 
 local appPath =
   local project = std.get(std.get(app, 'spec', {}), 'project', 'syn');

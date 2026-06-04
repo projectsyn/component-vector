@@ -1,2 +1,4 @@
 * xref:index.adoc[Home]
 * xref:references/parameters.adoc[Parameters]
+* How-tos
+** xref:how-tos/talos.adoc[Collect Talos host logs]

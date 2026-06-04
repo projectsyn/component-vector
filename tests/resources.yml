@@ -1,0 +1,141 @@
+# Test instance: Talos node deployed Agent.
+# Tails pod logs (kubernetes_logs) + Talos kernel/service logs (UDP 5140 via hostNetwork) and ships both to Loki with cluster/node labels.
+parameters:
+  vector:
+    # Cluster identifier shipped as `cluster` label / Loki tenant.
+    # Default for test; tenant repo overrides with `${cluster:name}`.
+    tenant_id: test-cluster
+
+    helm_values:
+      role: Agent
+      podHostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+
+      env:
+        - name: VECTOR_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: VECTOR_TENANT_ID
+          value: ${vector:tenant_id}
+
+      tolerations:
+        - operator: Exists
+
+      customConfig:
+        data_dir: /vector-data-dir
+
+        api:
+          enabled: false
+
+        sources:
+          talos_logs:
+            type: socket
+            mode: udp
+            address: 0.0.0.0:5140
+            decoding:
+              codec: json
+
+          pod_logs:
+            type: kubernetes_logs
+            ignore_older_secs: 600
+
+        transforms:
+          talos_transform:
+            type: remap
+            inputs:
+              - talos_logs
+            source: |
+              .cluster = get_env_var!("VECTOR_TENANT_ID")
+              .node = get_env_var!("VECTOR_NODE_NAME")
+              if exists(.msg) { .message = del(.msg) }
+              if exists(.log) { .message = del(.log) }
+              if exists(."talos-service") { .service = del(."talos-service") }
+              if exists(.facility) {
+                .source = "kernel"
+                del(.priority)
+                del(.facility)
+              } else {
+                .source = "service"
+              }
+
+          pod_transform:
+            type: remap
+            inputs:
+              - pod_logs
+            source: |
+              .cluster = get_env_var!("VECTOR_TENANT_ID")
+              .node = get_env_var!("VECTOR_NODE_NAME")
+              .namespace = .kubernetes.pod_namespace
+              .pod = .kubernetes.pod_name
+              .container = .kubernetes.container_name
+
+        sinks:
+          loki_talos:
+            type: loki
+            inputs:
+              - talos_transform
+            endpoint: http://loki-gateway.test-loki.svc.cluster.local:3100
+            tenant_id: ${vector:tenant_id}
+            out_of_order_action: rewrite_timestamp
+            labels:
+              cluster: '{{`{{ cluster }}`}}'
+              node: '{{`{{ node }}`}}'
+              source: '{{`{{ source }}`}}'
+              service_name: '{{`{{ service }}`}}'
+            encoding:
+              codec: text
+              except_fields:
+                - host
+                - source_type
+                - port
+                - talos-time
+                - talos-level
+                - facility
+                - priority
+                - kubernetes
+            compression: snappy
+            healthcheck:
+              enabled: false
+            request:
+              retry_max_duration_secs: 60
+              timeout_secs: 90
+            buffer:
+              type: disk
+              max_size: 268435488
+              when_full: drop_newest
+
+          loki_pod:
+            type: loki
+            inputs:
+              - pod_transform
+            endpoint: http://loki-gateway.test-loki.svc.cluster.local:3100
+            tenant_id: ${vector:tenant_id}
+            out_of_order_action: rewrite_timestamp
+            labels:
+              cluster: '{{`{{ cluster }}`}}'
+              node: '{{`{{ node }}`}}'
+              namespace: '{{`{{ namespace }}`}}'
+              pod: '{{`{{ pod }}`}}'
+              container: '{{`{{ container }}`}}'
+              service_name: '{{`{{ container }}`}}'
+              source: pod
+            encoding:
+              codec: text
+              except_fields:
+                - host
+                - source_type
+                - kubernetes
+                - file
+                - source_ip
+                - stream
+            compression: snappy
+            healthcheck:
+              enabled: false
+            request:
+              retry_max_duration_secs: 60
+              timeout_secs: 90
+            buffer:
+              type: disk
+              max_size: 268435488
+              when_full: drop_newest

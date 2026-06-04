@@ -1,0 +1,123 @@
+apiVersion: v1
+data:
+  vector.yaml: |
+    api:
+      enabled: false
+    data_dir: /vector-data-dir
+    sinks:
+      loki_pod:
+        buffer:
+          max_size: 268435488
+          type: disk
+          when_full: drop_newest
+        compression: snappy
+        encoding:
+          codec: text
+          except_fields:
+          - host
+          - source_type
+          - kubernetes
+          - file
+          - source_ip
+          - stream
+        endpoint: http://loki-gateway.test-loki.svc.cluster.local:3100
+        healthcheck:
+          enabled: false
+        inputs:
+        - pod_transform
+        labels:
+          cluster: '{{ cluster }}'
+          container: '{{ container }}'
+          namespace: '{{ namespace }}'
+          node: '{{ node }}'
+          pod: '{{ pod }}'
+          service_name: '{{ container }}'
+          source: pod
+        out_of_order_action: rewrite_timestamp
+        request:
+          retry_max_duration_secs: 60
+          timeout_secs: 90
+        tenant_id: test-cluster
+        type: loki
+      loki_talos:
+        buffer:
+          max_size: 268435488
+          type: disk
+          when_full: drop_newest
+        compression: snappy
+        encoding:
+          codec: text
+          except_fields:
+          - host
+          - source_type
+          - port
+          - talos-time
+          - talos-level
+          - facility
+          - priority
+          - kubernetes
+        endpoint: http://loki-gateway.test-loki.svc.cluster.local:3100
+        healthcheck:
+          enabled: false
+        inputs:
+        - talos_transform
+        labels:
+          cluster: '{{ cluster }}'
+          node: '{{ node }}'
+          service_name: '{{ service }}'
+          source: '{{ source }}'
+        out_of_order_action: rewrite_timestamp
+        request:
+          retry_max_duration_secs: 60
+          timeout_secs: 90
+        tenant_id: test-cluster
+        type: loki
+    sources:
+      pod_logs:
+        ignore_older_secs: 600
+        type: kubernetes_logs
+      talos_logs:
+        address: 0.0.0.0:5140
+        decoding:
+          codec: json
+        mode: udp
+        type: socket
+    transforms:
+      pod_transform:
+        inputs:
+        - pod_logs
+        source: |
+          .cluster = get_env_var!("VECTOR_TENANT_ID")
+          .node = get_env_var!("VECTOR_NODE_NAME")
+          .namespace = .kubernetes.pod_namespace
+          .pod = .kubernetes.pod_name
+          .container = .kubernetes.container_name
+        type: remap
+      talos_transform:
+        inputs:
+        - talos_logs
+        source: |
+          .cluster = get_env_var!("VECTOR_TENANT_ID")
+          .node = get_env_var!("VECTOR_NODE_NAME")
+          if exists(.msg) { .message = del(.msg) }
+          if exists(.log) { .message = del(.log) }
+          if exists(."talos-service") { .service = del(."talos-service") }
+          if exists(.facility) {
+            .source = "kernel"
+            del(.priority)
+            del(.facility)
+          } else {
+            .source = "service"
+          }
+        type: remap
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: Agent
+    app.kubernetes.io/instance: vector
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vector
+    app.kubernetes.io/version: 0.55.0-distroless-libc
+    helm.sh/chart: vector-0.52.0
+  name: vector
+  namespace: syn-vector

@@ -4,7 +4,7 @@
   "checkout": "main",
   "context": {
     "cookiecutter": {
-      "name": "A high-performance observability data pipeline.",
+      "name": "Vector",
       "slug": "vector",
       "parameter_key": "vector",
       "test_cases": "defaults",

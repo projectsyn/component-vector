@@ -1,5 +1,5 @@
 name: vector
-title: A high-performance observability data pipeline.
+title: Vector
 version: master
 start_page: ROOT:index.adoc
 nav:
